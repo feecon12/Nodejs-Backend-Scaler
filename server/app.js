@@ -1,16 +1,57 @@
 const express = require("express");
 const fs = require("fs");
 const short = require("short-uuid");
+const mongoose = require("mongoose");
 // const dotenv = require('dotenv')
 // dotenv.config()
 require("dotenv").config(); // to read .env file and make them available in process.env
 console.log(process.env.PORT);
 const PORT = process.env.PORT || 3300;
 
+/**Database connection starts */
+mongoose
+  .connect(process.env.DB_URL)
+  .then((connection) => {
+    console.log("DB is connected!");
+  })
+  .catch((err) => {
+    console.log("something went wrong with DB connection", err);
+  });
+
+/**Database connection ends */
+
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    minLength: 8,
+  },
+  confirmPassword: {
+    type: String,
+    required: true,
+    minLength: 8,
+    validate: function () {
+      return this.password === this.confirmPassword;
+    },
+    message: "Password and confirmed password should be same",
+  },
+  createdAt: Date,
+  id: String,
+});
+
+const User = mongoose.model("User", userSchema);
+
 const app = express();
 const data = fs.readFileSync("./data.json", "utf8");
 const userData = JSON.parse(data);
-// console.log(userData);
 
 app.use(express.json());
 
@@ -19,78 +60,66 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use(function(req, res, next) {
-//    if(isEmpty){
-//     // return error
-//    } else{
-//     next()
-//    }
+app.get("/api/user", getUserHandler);
+app.post("/api/user", createUserHandler);
+app.get("/api/user/:id", getUserById);
 
-// })
-
-// app.use(function (req, res) {
-//     res.status(200).send("Hello World");
-//   });
-
-app.get("/api/user", (req, res) => {
+/**route handlers */
+async function getUserHandler(req, res) {
   try {
-    let msg = "";
+    const userData = await User.find()
     if (userData.length === 0) {
-      msg = "No user found";
+      throw new Error('User not found')
     } else {
-      msg = "Data found";
+      msg = 'Data found'
+      res.json({
+        status: 200,
+        message: msg,
+        data: userData,
+      });
     }
-    res.json({
-      status: 200,
-      message: msg,
-      data: userData,
-    });
   } catch (err) {
     res.status(500).json({
       status: 500,
       message: err.message,
     });
   }
-});
+}
 
-app.post("/api/user", (req, res) => {
-  console.log("request body", req.body);
-  //   console.log(req);
-  const id = short.generate();
-  const userDetails = req.body;
-  const isEmpty = Object.keys(userDetails).length === 0;
-  if (isEmpty) {
-    res.status(400).json({
-      status: 400,
-      message: "Body cannot be empty",
-    });
-  } else {
-    userDetails.id = id;
-    console.log("new user", userDetails);
-    userData.push(userDetails);
-    fs.writeFile("./data.json", JSON.stringify(userData), (err) => {
-      if (err) {
-        console.log(err);
-      }
-      res.json({
-        status: 200,
-        message: "User added successfully",
-        data: userDetails,
+async function createUserHandler(req, res) {
+  try {
+    console.log("request body", req.body);
+    const userDetails = req.body;
+    const isEmpty = Object.keys(userDetails).length === 0;
+    if (isEmpty) {
+      res.status(400).json({
+        status: 400,
+        message: "Body cannot be empty",
       });
-    });
+    } else {
+      console.log("new user", userDetails);
+      userData.push(userDetails);
+      const user = await User.create(userDetails);
+      res.status(201).json({
+        message: "User created Successfully!",
+        data: user,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      message:error.message,
+    })
   }
-});
+}
 
-app.get("/api/user/:id", (req, res) => {
+async function getUserById(req, res) {
   try {
     const { id } = req.params;
     console.log("userid", id);
-    const user = userData.find((user) => user.id === id);
+    // const user = userData.find((user) => user.id === id);
+    const user = await User.findById(id);
     if (!user) {
-      // res.status(404).json({
-      //     status: 404,
-      //     message: "User not found",
-      //    })
       throw new Error("User not found");
     }
     res.json({
@@ -104,7 +133,7 @@ app.get("/api/user/:id", (req, res) => {
       message: err.message,
     });
   }
-});
+}
 
 app.use(function (req, res) {
   res.status(404).send("404 Not Found");
