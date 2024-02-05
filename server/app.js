@@ -1,142 +1,56 @@
 const express = require("express");
-const fs = require("fs");
-// const short = require("short-uuid");
 const mongoose = require("mongoose");
-// const dotenv = require('dotenv')
-// dotenv.config()
-require("dotenv").config(); // to read .env file and make them available in process.env
-console.log(process.env.PORT);
+// const connectDB = require("./utils/db")
+const {
+  createUser,
+  getUser,
+  getUserById,
+  updateUserById,
+  deleteUserById,
+  checkInput,
+} = require("./controllers/userController");
+
+const {
+  getProduct,
+  createProduct,
+  getProductById,
+  updateProductById,
+  deleteProductById,
+} = require("./controllers/productController");
+
+require("dotenv").config();
 const PORT = process.env.PORT || 3300;
+const DB_URL = process.env.DB_URL;
 
 /**Database connection starts */
 mongoose
-  .connect(process.env.DB_URL)
-  .then((connection) => {
-    console.log("DB is connected!");
+  .connect(DB_URL)
+  .then(() => {
+    console.log("Connection to MongoDB is established!");
   })
   .catch((err) => {
     console.log("something went wrong with DB connection", err);
   });
-
 /**Database connection ends */
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    minLength: 8,
-  },
-  confirmPassword: {
-    type: String,
-    required: true,
-    minLength: 8,
-    validate: function () {
-      return this.password === this.confirmPassword;
-    },
-    message: "Password and confirmed password should be same",
-  },
-  createdAt: Date,
-  id: String,
-});
+// connectDB();
 
-//User model creation
-const User = mongoose.model("User", userSchema);
-
-//app will hold all the properties and power of express framework
 const app = express();
-
-//middleware to make the express req/res body as json()
 app.use(express.json());
 
-// app.use((req, res, next) => {
-//   console.log(`${req.method} request to ${req.path}`);
-//   next();
-// });
-
-/**Routes */
-app.get("/api/user", getUserHandler);
-app.post("/api/user", createUserHandler);
+/**user routes */
+app.get("/api/user", getUser);
+app.post("/api/user", checkInput, createUser);
 app.get("/api/user/:id", getUserById);
+app.patch("/api/user/:id", updateUserById);
+app.delete("/api/user/:id",deleteUserById);
 
-/**route handlers */
-async function getUserHandler(req, res) {
-  try {
-    const userData = await User.find()
-    if (userData.length === 0) {
-      throw new Error('User not found')
-    } else {
-      res.status(200).json({
-        status: 200,
-        message: "Data found",
-        data: userData,
-      });
-    }
-  } catch (err) {
-    res.status(500).json({
-      status: 500,
-      message: err.message,
-    });
-  }
-}
-
-async function createUserHandler(req, res) {
-  try {
-    console.log("request body", req.body);
-    const userDetails = req.body;
-    const isEmpty = Object.keys(userDetails).length === 0;
-    if (isEmpty) {
-      res.status(400).json({
-        status: 400,
-        message: "Body cannot be empty",
-      });
-    } else {
-      console.log("new user", userDetails);
-      const user = await User.create(userDetails);
-      res.status(201).json({
-        status:201,
-        message: "User created Successfully!",
-        data: user,
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      status: 500,
-      message:error.message,
-    })
-  }
-}
-
-async function getUserById(req, res) {
-  try {
-    const { id } = req.params;
-    console.log("userid", id);
-    // const user = userData.find((user) => user.id === id);
-    const user = await User.findById(id);
-    if (!user) {
-      throw new Error("User not found");
-    }
-    res.status(200).json({
-      status: 200,
-      message: "User found",
-      data: user,
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 500,
-      message: err.message,
-    });
-  }
-}
-
-/**end of route handlers */
+/**product routes */
+app.post("/api/product", createProduct);
+app.get("/api/product", getProduct);
+app.get("/api/product/:id", getProductById);
+app.patch("/api/product/:id", updateProductById);
+app.delete("/api/product/:id", deleteProductById);
 
 //fallback middleware, i.e if no middleware works then the default middleware works
 app.use(function (req, res) {
@@ -145,5 +59,5 @@ app.use(function (req, res) {
 
 //start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running at http://localhost/${PORT}`);
 });
