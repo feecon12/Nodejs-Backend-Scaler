@@ -1,6 +1,6 @@
 const express = require("express");
 const fs = require("fs");
-const short = require("short-uuid");
+// const short = require("short-uuid");
 const mongoose = require("mongoose");
 // const dotenv = require('dotenv')
 // dotenv.config()
@@ -47,19 +47,21 @@ const userSchema = new mongoose.Schema({
   id: String,
 });
 
+//User model creation
 const User = mongoose.model("User", userSchema);
 
+//app will hold all the properties and power of express framework
 const app = express();
-const data = fs.readFileSync("./data.json", "utf8");
-const userData = JSON.parse(data);
 
+//middleware to make the express req/res body as json()
 app.use(express.json());
 
-app.use((req, res, next) => {
-  console.log(`${req.method} request to ${req.path}`);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(`${req.method} request to ${req.path}`);
+//   next();
+// });
 
+/**Routes */
 app.get("/api/user", getUserHandler);
 app.post("/api/user", createUserHandler);
 app.get("/api/user/:id", getUserById);
@@ -71,10 +73,9 @@ async function getUserHandler(req, res) {
     if (userData.length === 0) {
       throw new Error('User not found')
     } else {
-      msg = 'Data found'
-      res.json({
+      res.status(200).json({
         status: 200,
-        message: msg,
+        message: "Data found",
         data: userData,
       });
     }
@@ -98,9 +99,9 @@ async function createUserHandler(req, res) {
       });
     } else {
       console.log("new user", userDetails);
-      userData.push(userDetails);
       const user = await User.create(userDetails);
       res.status(201).json({
+        status:201,
         message: "User created Successfully!",
         data: user,
       });
@@ -122,7 +123,7 @@ async function getUserById(req, res) {
     if (!user) {
       throw new Error("User not found");
     }
-    res.json({
+    res.status(200).json({
       status: 200,
       message: "User found",
       data: user,
@@ -135,10 +136,14 @@ async function getUserById(req, res) {
   }
 }
 
+/**end of route handlers */
+
+//fallback middleware, i.e if no middleware works then the default middleware works
 app.use(function (req, res) {
   res.status(404).send("404 Not Found");
 });
 
+//start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
