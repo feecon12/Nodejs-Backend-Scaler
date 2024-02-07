@@ -23,9 +23,18 @@ const userSchema = new mongoose.Schema({
     },
     message: "Password and confirmed password should be same",
   },
+  address: {
+    type: String,
+    required: true,
+  },
   createdAt: Date,
   id: String,
 });
+
+// /** pre hooks */
+// userSchema.pre("save",function(){
+//   this.confirmPassword = undefined;
+// })
 
 //User model creation
 const User = mongoose.model("User", userSchema);

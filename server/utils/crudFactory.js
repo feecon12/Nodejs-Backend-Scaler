@@ -9,18 +9,18 @@ const createFactory = (elementModel) => async (req, res) => {
         message: "Body cannot be empty",
       });
     } else {
-      console.log("new user", elementDetail);
-      const user = await elementModel.create(elementDetail);
+      console.log("new data", elementDetail);
+      const data = await elementModel.create(elementDetail);
       res.status(201).json({
         status: 201,
-        message: "elementModel created Successfully!",
-        data: user,
+        message: "data created Successfully!",
+        data: data,
       });
     }
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({
       status: 500,
-      message: error.message,
+      message: err.message,
     });
   }
 };
@@ -118,6 +118,7 @@ const deleteFactoryById = (elementModel) => async (req, res) => {
   }
 };
 
+//check the imputs before create data
 const checkInput = function (req, res) {
   console.log("req method", req.method);
   const data = req.body;

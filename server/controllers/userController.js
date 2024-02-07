@@ -8,14 +8,14 @@ const {
   checkInput
 } = require('../utils/crudFactory');
 
-const getUser = getFactory(User);
+const getUsers = getFactory(User);
 const createUser = createFactory(User);
 const getUserById = getFactoryById(User);
 const updateUserById = updateFactoryById(User);
 const deleteUserById = deleteFactoryById(User); 
 
 module.exports = {
-  getUser,
+  getUsers,
   createUser,
   getUserById,
   updateUserById,

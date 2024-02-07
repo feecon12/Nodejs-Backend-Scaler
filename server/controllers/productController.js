@@ -8,14 +8,14 @@ const {
   checkInput,
 } = require("../utils/crudFactory");
 
-const getProduct = getFactory(Product);
+const getProducts = getFactory(Product);
 const createProduct = createFactory(Product);
 const getProductById = getFactoryById(Product);
 const updateProductById = updateFactoryById(Product);
 const deleteProductById = deleteFactoryById(Product); 
 
 module.exports = {
-  getProduct,
+  getProducts,
   createProduct,
   getProductById,
   updateProductById,
