@@ -8,8 +8,10 @@ const {
   updateUserById,
   deleteUserById,
   checkInput,
+  searchUserByParams,
 } = require("../controllers/userController");
 
+userRouter.get("/", searchUserByParams);
 userRouter.get("/", getUsers);
 userRouter.post("/", createUser);
 userRouter.get("/:id", getUserById);

@@ -6,6 +6,7 @@ const {
   updateFactoryById,
   deleteFactoryById,
   checkInput,
+  searchFactoryByParams,
 } = require("../utils/crudFactory");
 
 const getProducts = getFactory(Product);
@@ -13,6 +14,7 @@ const createProduct = createFactory(Product);
 const getProductById = getFactoryById(Product);
 const updateProductById = updateFactoryById(Product);
 const deleteProductById = deleteFactoryById(Product); 
+const searchByParams = searchFactoryByParams(Product);
 
 module.exports = {
   getProducts,
@@ -21,4 +23,5 @@ module.exports = {
   updateProductById,
   deleteProductById,
   checkInput,
+  searchByParams,
 };

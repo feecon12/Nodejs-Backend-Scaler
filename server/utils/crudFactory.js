@@ -133,6 +133,41 @@ const checkInput = function (req, res) {
   }
 };
 
+//search based on request parameters
+const searchFactoryByParams = (elementModel) => async (req, res) => {
+  try {
+    const sortQuery = req.query.sort;
+    const selectQuery = req.query.select;
+
+    //sorting logic
+    let queryResPromise = elementModel.find();
+    if (sortQuery) {
+      const [sortParam, order] = sortQuery.split(" ");
+      console.log("sort param ->", sortParam);
+      console.log("order ->", order);
+
+      if (order === "asc") {
+        console.log("order is", order);
+        queryResPromise = queryResPromise.sort(sortParam);
+      } else {
+        queryResPromise = queryResPromise.sort(`-${sortParam}`);
+      }
+    }
+
+    const result = await queryResPromise;
+
+    res.status(200).json({
+      message: "Search successfull!",
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "internal server error",
+      error: err.message,
+    });
+  }
+};
+
 module.exports = {
   createFactory,
   getFactory,
@@ -140,4 +175,5 @@ module.exports = {
   updateFactoryById,
   deleteFactoryById,
   checkInput,
+  searchFactoryByParams,
 };

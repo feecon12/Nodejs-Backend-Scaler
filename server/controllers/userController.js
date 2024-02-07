@@ -5,7 +5,8 @@ const {
   getFactoryById,
   updateFactoryById,
   deleteFactoryById,
-  checkInput
+  checkInput,
+  searchFactoryByParams
 } = require('../utils/crudFactory');
 
 const getUsers = getFactory(User);
@@ -13,6 +14,7 @@ const createUser = createFactory(User);
 const getUserById = getFactoryById(User);
 const updateUserById = updateFactoryById(User);
 const deleteUserById = deleteFactoryById(User); 
+const searchUserByParams = searchFactoryByParams(User);
 
 module.exports = {
   getUsers,
@@ -21,5 +23,6 @@ module.exports = {
   updateUserById,
   deleteUserById,
   checkInput,
+  searchUserByParams,
 };
 

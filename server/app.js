@@ -22,16 +22,9 @@ mongoose
 const app = express();
 app.use(express.json());
 
-/**router*/
+/**routers*/
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
-app.use("/search", (req, res) => {
-  console.log(req.query);
-  res.status(200).json({
-    message: "Search successfull!",
-    data: req.query,
-  });
-});
 
 //fallback middleware, i.e if no middleware works then the default middleware works
 app.use(function (req, res) {
