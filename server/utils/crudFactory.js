@@ -72,13 +72,9 @@ const updateFactoryById = (elementModel) => async (req, res) => {
     const { id } = req.params;
     const data = req.body;
     console.log("dataId", id);
-    const updatedData = await elementModel.findByIdAndUpdate(
-      id,
-      data,
-      {
-        new: true,
-      }
-    );
+    const updatedData = await elementModel.findByIdAndUpdate(id, data, {
+      new: true,
+    });
     console.log("updated data", updatedData);
     if (!updatedData) {
       throw new Error("data not found");
@@ -153,6 +149,18 @@ const searchFactoryByParams = (elementModel) => async (req, res) => {
         queryResPromise = queryResPromise.sort(`-${sortParam}`);
       }
     }
+
+    //selecting
+    if (selectQuery) {
+      queryResPromise = queryResPromise.select(selectQuery);
+    }
+
+    //pagination
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 5;
+    const skip = (page - 1) * limit;
+    console.log("skip", skip);
+    queryResPromise = queryResPromise.skip(skip).limit(limit);
 
     const result = await queryResPromise;
 

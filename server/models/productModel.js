@@ -76,6 +76,7 @@ productSchema.post("save", function () {
   console.log("post save hook");
 });
 
+
 const Product = mongoose.model("Product", productSchema);
 
 module.exports = Product;
