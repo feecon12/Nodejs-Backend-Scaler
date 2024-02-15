@@ -160,6 +160,15 @@ const searchFactoryByParams = (elementModel) => async (req, res) => {
     const limit = req.query.limit || 5;
     const skip = (page - 1) * limit;
     console.log("skip", skip);
+
+    /**Filter  */
+    const filterQuery = req.query.filter;
+
+    if (filterQuery) {
+      console.log("filter query", filterQuery);
+      queryResPromise = queryResPromise.find(filterQuery);
+    }
+
     queryResPromise = queryResPromise.skip(skip).limit(limit);
 
     const result = await queryResPromise;
