@@ -20,6 +20,6 @@ userRouter.get("/:id", getUserById);
 userRouter.patch("/:id", updateUserById);
 userRouter.delete("/:id", deleteUserById);
 userRouter.post("/forgetPassword", forgetPassword);
-userRouter.patch("/resetPassword/:id", resetPassword);
+userRouter.patch("/resetPassword/:userId", resetPassword);
 
 module.exports = userRouter;

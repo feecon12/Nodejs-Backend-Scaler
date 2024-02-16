@@ -14,15 +14,15 @@ const userSchema = new mongoose.Schema({
     required: true,
     minLength: 8,
   },
-  confirmPassword: {
-    type: String,
-    required: true,
-    minLength: 8,
-    validate: function () {
-      return this.password === this.confirmPassword;
-    },
-    message: "Password and confirmed password should be same",
-  },
+  // confirmPassword: {
+  //   type: String,
+  //   required: true,
+  //   minLength: 8,
+  //   validate: function () {
+  //     return this.password === this.confirmPassword;
+  //   },
+  //   message: "Password and confirmed password should be same",
+  // },
   address: {
     type: String,
     required: true,
@@ -39,4 +39,4 @@ const userSchema = new mongoose.Schema({
 //User model creation
 const User = mongoose.model("User", userSchema);
 
-module.exports = User ;
+module.exports = User;

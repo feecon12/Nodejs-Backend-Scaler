@@ -1,5 +1,5 @@
 const User = require("../models/userModel");
-const {emailBuilder} = require("../nodemailer");
+const { emailBuilder } = require("../nodemailer");
 const {
   createFactory,
   getFactory,
@@ -66,6 +66,47 @@ const resetPassword = async (req, res) => {
   //user send token and the new password
   //verify that token is valid
   //update the user's password
+  try {
+    const { token, password, email } = req.body;
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(400).json({
+        status: "fail",
+        message: "User not found",
+      });
+    } else {  
+      if (user.token !== token) {
+        res.status(401).json({
+          status: "fail",
+          message: "Invalid token",
+        });
+      } else {
+        if (user.otpExpiry < Date.now()) {
+          res.status(401).json({
+            status: "fail",
+            message: "Token expired",
+          });
+        } else {
+          user.password = password;
+          user.token = null;
+          user.otpExpiry = null;
+          await user.save();
+          console.log("Password reset successfully!")
+          res.status(200).json({
+            status: "success",
+            message: "Password reset successfully",
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.log("Error in reset password", err);
+    res.status(500).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
 };
 
 module.exports = {

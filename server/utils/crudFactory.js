@@ -98,11 +98,11 @@ const deleteFactoryById = (elementModel) => async (req, res) => {
     const { id } = req.params;
     const deletedData = await elementModel.findByIdAndDelete(id);
     if (!deletedData) {
-      throw new Error("Product not found");
+      throw new Error("Data not found");
     } else {
       res.status(200).json({
         status: 200,
-        message: "Product deleted successfully",
+        message: "Data deleted successfully",
         data: deletedData,
       });
     }
