@@ -19,6 +19,7 @@ productRouter.get("/:id", getProductById);
 productRouter.patch("/:id", updateProductById);
 productRouter.delete("/:id", deleteProductById);
 
+
 // async function searchByParams(req, res) {
 //   try {
 //     const sortQuery = req.query.sort;

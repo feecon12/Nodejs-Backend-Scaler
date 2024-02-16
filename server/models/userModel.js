@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  createdAt: Date,
-  id: String,
+  token: String,
+  otpExpiry: Date,
 });
 
 // /** pre hooks */
